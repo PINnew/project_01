@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Каталог цветов</title>
+</head>
+<body>
+    <h1>Каталог цветов</h1>
+    <ul>
+        {% for product in products %}
+            <li>
+                <img src="{{ product.image.url }}" alt="{{ product.name }}" width="100">
+                <p>{{ product.name }} ({{ product.get_color_display }}, {{ product.get_product_type_display }})</p>
+                <p>Цена за 1 штуку: {{ product.price }} руб.</p>
+                <a href="#">Добавить в корзину</a>
+            </li>
+        {% endfor %}
+    </ul>
+</body>
+</html>

@@ -1,0 +1,17 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Оформление заказа</title>
+</head>
+<body>
+    <h1>Оформление заказа</h1>
+    <form method="post">
+        {% csrf_token %}
+        <label for="delivery_address">Адрес доставки:</label>
+        <input type="text" name="delivery_address" required><br>
+        <label for="comment">Комментарий:</label>
+        <textarea name="comment"></textarea><br>
+        <button type="submit">Оформить заказ</button>
+    </form>
+</body>
+</html>
