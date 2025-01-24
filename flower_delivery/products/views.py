@@ -31,10 +31,22 @@ def catalog(request):
 def add_to_cart(request, product_id):
     """Добавление товара в корзину с увеличением количества"""
     cart = request.session.get('cart', {})
+
+    # Проверка: если корзина хранится как список, преобразуем её в словарь
+    if isinstance(cart, list):
+        new_cart = {}
+        for id in cart:
+            new_cart[str(id)] = 1  # Устанавливаем количество 1 для каждого товара
+        cart = new_cart
+        request.session['cart'] = cart  # Сохраняем преобразованную корзину
+
+    # Добавляем товар или увеличиваем его количество
     if str(product_id) in cart:
-        cart[str(product_id)] += 1  # Увеличиваем количество товара
+        cart[str(product_id)] += 1  # Увеличиваем количество
     else:
         cart[str(product_id)] = 1  # Добавляем товар с количеством 1
+
+    # Обновляем корзину в сессии
     request.session['cart'] = cart
     return redirect('cart')
 

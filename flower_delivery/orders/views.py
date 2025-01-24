@@ -2,6 +2,7 @@ from django.shortcuts import render, redirect
 from .models import Order
 from products.models import Product
 from django.contrib.auth.decorators import login_required
+from bot.bot import send_order_notification
 
 @login_required
 def place_order(request):
@@ -25,6 +26,9 @@ def place_order(request):
 
         # Очищаем корзину после оформления заказа
         request.session['cart'] = []
+
+        # Отправляем уведомление в Telegram
+        send_order_notification(order)
 
         # Перенаправляем на страницу успешного оформления заказа
         return redirect('order_success')
