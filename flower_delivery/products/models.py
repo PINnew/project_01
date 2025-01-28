@@ -1,5 +1,6 @@
 from django.db import models
 
+
 class Product(models.Model):
     TYPE_CHOICES = [
         ('rose', 'Розы'),

@@ -1,11 +1,10 @@
 import os
 import django
+from products.models import Product
 
 # Настраиваем Django
 os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'flower_delivery.settings')
 django.setup()
-
-from products.models import Product
 
 # Словарь с тестовыми данными
 test_products = [

@@ -2,15 +2,15 @@ import logging
 from telegram import Bot, InputFile
 from telegram.constants import ParseMode
 
+
+# Настройки бота
+TELEGRAM_BOT_TOKEN = '8159735528:AAF8Q5ZmM14-OGr7c0hJp7pl7O1ndF9f55g'
+CHAT_ID = '340779174'
+
+bot = Bot(token=TELEGRAM_BOT_TOKEN)
 # Логирование
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
-
-# Настройки бота
-TELEGRAM_BOT_TOKEN = 'ваш_токен'
-CHAT_ID = 'ваш_чат_id'
-
-bot = Bot(token=TELEGRAM_BOT_TOKEN)
 
 
 async def send_order_notification(order):

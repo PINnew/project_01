@@ -1,19 +1,21 @@
 import asyncio
+import logging
+import threading
+from asgiref.sync import async_to_sync
 from django.shortcuts import render, redirect
 from .models import Order
 from products.models import Product
-from django.contrib.auth.decorators import login_required
 from bot.bot import send_order_notification
 
 
-@login_required
 def place_order(request):
     """Оформление заказа"""
     cart = request.session.get('cart', [])
     products = Product.objects.filter(id__in=cart)
 
     if not products.exists():
-        return redirect('cart')  # Если корзина пуста, перенаправляем обратно
+        request.session['cart'] = []  # Очищаем корзину
+        return redirect('cart')  # Перенаправляем обратно
 
     if request.method == 'POST':
         # Получаем данные из формы
@@ -34,9 +36,8 @@ def place_order(request):
 
         # Отправляем уведомление в Telegram
         try:
-            asyncio.run(send_order_notification(order))
+            async_to_sync(send_order_notification)(order)
         except Exception as e:
-            # Логируем ошибку, но продолжаем выполнение
             print(f"Ошибка при отправке уведомления: {e}")
 
         # Перенаправляем на страницу успешного оформления заказа
