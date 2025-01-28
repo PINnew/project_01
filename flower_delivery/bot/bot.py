@@ -4,8 +4,8 @@ from telegram.constants import ParseMode
 
 
 # Настройки бота
-TELEGRAM_BOT_TOKEN = '8159735528:AAF8Q5ZmM14-OGr7c0hJp7pl7O1ndF9f55g'
-CHAT_ID = '340779174'
+TELEGRAM_BOT_TOKEN = '0000'     # УСТОНОВИТЬ TOKEN
+CHAT_ID = '0000'                # УСТОНОВИТЬ CHAT_ID
 
 bot = Bot(token=TELEGRAM_BOT_TOKEN)
 # Логирование
