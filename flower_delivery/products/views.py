@@ -1,4 +1,4 @@
-from django.shortcuts import render, redirect, get_object_or_404
+from django.shortcuts import render, redirect
 from django.contrib.auth import login
 from .forms import RegistrationForm
 from django.contrib.auth.views import LoginView
@@ -55,25 +55,31 @@ def cart(request):
     """Отображение корзины"""
     cart = request.session.get('cart', {})
 
-    # Проверка: если корзина — это список, преобразуем в словарь
+    # Проверка, если корзина вдруг сохранилась как список (устаревший формат)
     if isinstance(cart, list):
         new_cart = {}
         for product_id in cart:
-            new_cart[str(product_id)] = 1  # Устанавливаем количество 1 для каждого товара
+            new_cart[str(product_id)] = 1  # Количество по умолчанию 1
         cart = new_cart
-        request.session['cart'] = cart  # Сохраняем исправленную корзину
+        request.session['cart'] = cart  # Обновляем в сессии
 
     products = Product.objects.filter(id__in=cart.keys())
 
     # Формируем список товаров с количеством
     cart_items = []
+    total_price = 0  # Переменная для итоговой суммы
     for product in products:
+        quantity = cart[str(product.id)]
+        total_price += product.price * quantity  # Добавляем стоимость товара в итог
         cart_items.append({
             'product': product,
-            'quantity': cart[str(product.id)]
+            'quantity': quantity,
         })
 
-    return render(request, 'products/cart.html', {'cart_items': cart_items})
+    return render(request, 'products/cart.html', {
+        'cart_items': cart_items,
+        'total_price': total_price,  # Передаём в шаблон
+    })
 
 
 def remove_from_cart(request, product_id):
