@@ -7,13 +7,23 @@ from django.shortcuts import render, redirect
 from .models import Order
 from products.models import Product
 from bot.bot import send_order_notification
+from concurrent.futures import ThreadPoolExecutor
+
+executor = ThreadPoolExecutor()
+
+
+def run_async_task(coroutine):
+    """Функция для безопасного запуска асинхронной задачи в отдельном потоке."""
+    loop = asyncio.new_event_loop()
+    asyncio.set_event_loop(loop)
+    return loop.run_until_complete(coroutine)
 
 
 @login_required
-def place_order_sync(request):
+def place_order(request):
     """Синхронный метод для оформления заказа"""
     cart = request.session.get('cart', [])
-    products = Product.objects.filter(id__in=cart)
+    products = Product.objects.filter(id__in = cart)
 
     if not products.exists():
         request.session['cart'] = []  # Очищаем корзину
@@ -29,9 +39,9 @@ def place_order_sync(request):
 
         # Создаём новый заказ
         order = Order.objects.create(
-            user=request.user,
-            delivery_address=delivery_address,
-            comment=comment
+            user = request.user,
+            delivery_address = delivery_address,
+            comment = comment
         )
         order.products.set(products)
         order.save()
@@ -40,29 +50,15 @@ def place_order_sync(request):
         request.session['cart'] = []
 
         # ✅ Отправляем уведомление в Telegram (асинхронно)
-        asyncio.create_task(send_order_notification(order, total_price, products))
+        executor.submit(run_async_task, send_order_notification(order, total_price, products))
 
         # Перенаправляем на страницу успешного оформления заказа
         return redirect('order_success')
 
     return render(request, 'orders/place_order.html', {
-        'products': products,
-        'total_price': total_price,  # Передаём итоговую сумму в шаблон
+       'products': products,
+       'total_price': total_price,  # Передаём итоговую сумму в шаблон
     })
-
-
-async def send_order_notification(order, total_price, products):
-    # Асинхронная отправка уведомления в Telegram
-    try:
-        await some_async_telegram_api(order, total_price, products)
-    except Exception as e:
-        logging.error(f"❌ Ошибка при отправке уведомления: {e}")
-
-
-@sync_to_async
-def some_async_telegram_api(order, total_price, products):
-    # Синхронная реализация, если необходимо
-    send_order_notification(order, total_price, products)
 
 
 def order_success(request):

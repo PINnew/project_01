@@ -26,11 +26,14 @@
             <ul class="list-group mb-4">
                 {% for product in products %}
                     <li class="list-group-item d-flex justify-content-between align-items-center">
-                        <span>{{ product.name }} ({{ product.price }} руб.)</span>
+                        <span>{{ product.name }}</span>
                         <span><img src="{{ product.image.url }}" alt="{{ product.name }}" width="60"></span>
                     </li>
                 {% endfor %}
             </ul>
+
+            <!-- Итоговая сумма -->
+                <h3 class="text-end">Итоговая сумма: <strong>{{ total_price|floatformat:2 }} руб.</strong></h3>
 
             <button type="submit" class="btn btn-success">Оформить заказ</button>
         </form>

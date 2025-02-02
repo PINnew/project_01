@@ -13,14 +13,12 @@ logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
 
-async def send_order_notification(order):
-    """
-    Отправляет уведомление о новом заказе в Telegram.
-    """
+async def send_order_notification(order, total_price, products):
+    """Отправляет уведомление о новом заказе в Telegram."""
     try:
-        # Общая стоимость заказа
-        total_price = sum(product.price for product in order.products.all())
-        products_text = "\n".join([f"• {product.name} - {product.price} руб." for product in order.products.all()])
+        # Преобразуем QuerySet в список строк
+        products_list = [f"- {product.name}" for product in products]
+        products_text = "\n".join(products_list)
 
         # Формируем текст сообщения
         message = (
